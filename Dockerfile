@@ -37,5 +37,5 @@ RUN chown -R ${SVN_USER}:svnusers /home/${SVN_USER}
 RUN chmod +x /home/${SVN_USER} 
 RUN chmod 600 /home/${SVN_USER}/.ssh/authorized_keys
 
-#ENTRYPOINT [ "/usr/sbin/sshd", "-D" ]
-ENTRYPOINT ["/bin/ping", "8.8.8.8"] 
+ENTRYPOINT ["/usr/sbin/sshd", "-D"]
+#ENTRYPOINT ["/bin/ping", "8.8.8.8"] 
