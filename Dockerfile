@@ -16,9 +16,11 @@ RUN sed -i '/Subsystem/ s/^#*/#/' /etc/ssh/sshd_config && \
   ssh-keygen -b 4096 -f /etc/ssh/ssh_host_ed25519_key -t ed25519 -N "" ; \
   chmod 600 /etc/ssh/ssh_host_*_key
 
-RUN adduser -D -G svnusers -s /bin/bash ${SVN_USER}
+RUN adduser -D -G svnusers -s /bin/bash ${SVN_USER} && \
+  echo "${SVN_USER}:$(openssl rand -base64 32)" | chpasswd && \
+  apk del openssl
 
-#RUN sed -i '-e "\$a
+
 RUN echo -e "Port $SVN_PORT\n  VersionAddendum OpenBSD\n  Match LocalPort $SVN_PORT\n  AllowUsers ${SVN_USER}\n  AuthenticationMethods publickey\n  X11Forwarding no\n  AllowTcpForwarding no\n  AllowAgentForwarding no\n  PermitTTY no\n  PubkeyAuthentication yes\n  PasswordAuthentication no\n  PermitEmptyPasswords no\n  PermitTunnel no\n  GatewayPorts no\n  Banner \"Authorised use only\"\n  ForceCommand /usr/bin/svnserve -i -r /home/${SVN_USER}/repos --log-file /home/${SVN_USER}/logs/svn.log\n" >> /etc/ssh/sshd_config
 
 EXPOSE $SVN_PORT
