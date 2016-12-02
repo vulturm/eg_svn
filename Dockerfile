@@ -5,7 +5,7 @@ ENV SVN_USER=svnuser
 ENV SVN_PORT=1022
 
 RUN apk update && \
-    apk add subversion openssh && \
+    apk add subversion openssh openssl && \
     apk add bash && \
     rm /var/cache/apk/*
 
