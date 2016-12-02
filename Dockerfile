@@ -33,7 +33,7 @@ RUN echo 'ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQDn0yvgQXKzVYauve+nOLAImeYJYBUWEq
 RUN echo 'ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQDQR/UxNXnD6gSxhJwejZE0YjBYPHtSRQJp2fU0JjOSTHye6apdQme/XPGl8atAng6fyzlZcEaZFMDq7cNFZhrZzgCwtCaRRVdZh+wwJmTa0Qzi/sWK73+nGYnePfN1cFZdY9sLi9UnBgVmB5X5kgnCx4SIGZqUcze+fGW4LaGMVfcwZUo51TP8JfjRtfwAhXl2kIkTR1iY4pJ+ryTzdD5iLSwen5RbJbHsQ1GVpCp3nuUQn7z8Bsqt/BJClKM7HcOV1IbzPKIs49Z2ZP/+n03Km4VKaVkqPU8m29PBk8pYK6QP18SNTvgRFugqGSJqNDQt0H8FM1uGc8tqAuttlbxN xanto@fedora.test.lo' >> /home/${SVN_USER}/.ssh/authorized_keys
 
 
-RUN chown -R svn:svnusers /home/${SVN_USER}
+RUN chown -R ${SVN_USER}:svnusers /home/${SVN_USER}
 RUN chmod +x /home/${SVN_USER} 
 RUN chmod 600 /home/${SVN_USER}/.ssh/authorized_keys
 
