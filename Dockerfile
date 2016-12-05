@@ -20,7 +20,7 @@ RUN adduser -D -G svnusers -s /bin/bash ${SVN_USER} && \
   apk del openssl
 
 
-RUN echo -e "Port $SVN_PORT\n  VersionAddendum OpenBSD\n  Match LocalPort $SVN_PORT\n  AllowUsers ${SVN_USER}\n  AuthenticationMethods publickey\n  X11Forwarding no\n  AllowTcpForwarding no\n  AllowAgentForwarding no\n  PermitTTY no\n  PubkeyAuthentication yes\n  PasswordAuthentication no\n  PermitEmptyPasswords no\n  PermitTunnel no\n  GatewayPorts no\n  Banner \"Authorised use only\"\n  ForceCommand /usr/bin/svnserve -i -r /home/${SVN_USER}/repos --log-file /home/${SVN_USER}/logs/svn.log\n" >> /etc/ssh/sshd_config
+RUN echo -e "Port $SVN_PORT\n  VersionAddendum OpenBSD\n  Match LocalPort $SVN_PORT\n  AllowUsers ${SVN_USER}\n  AuthenticationMethods publickey\n  X11Forwarding no\n  AllowTcpForwarding no\n  AllowAgentForwarding no\n  PermitTTY no\n  PubkeyAuthentication yes\n  PasswordAuthentication no\n  PermitEmptyPasswords no\n  PermitTunnel no\n  GatewayPorts no\n  Banner \"Authorised use only\"\n  ForceCommand /usr/bin/svnserve -i -r /home/${SVN_USER}/repos --log-file /home/${SVN_USER}/logs/svnserve.log\n" >> /etc/ssh/sshd_config
 
 EXPOSE $SVN_PORT
 VOLUME /home/${SVN_USER}/repos
@@ -37,5 +37,5 @@ RUN chown -R ${SVN_USER}:svnusers /home/${SVN_USER}
 RUN chmod +x /home/${SVN_USER} 
 RUN chmod 600 /home/${SVN_USER}/.ssh/authorized_keys
 
-ENTRYPOINT ["/usr/sbin/sshd", "-D"]
+ENTRYPOINT ["/usr/sbin/sshd", "-D", "-E", "/home/svnuser/logs/sshd.log"]
 #ENTRYPOINT ["/bin/ping", "8.8.8.8"] 
