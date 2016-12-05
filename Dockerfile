@@ -24,6 +24,7 @@ RUN echo -e "Port $SVN_PORT\n  VersionAddendum OpenBSD\n  Match LocalPort $SVN_P
 
 EXPOSE $SVN_PORT
 VOLUME /home/${SVN_USER}/repos
+VOLUME /home/${SVN_USER}/logs
 
 RUN mkdir -p /home/${SVN_USER}/logs /home/${SVN_USER}/.ssh
 
