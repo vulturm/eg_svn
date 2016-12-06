@@ -6,21 +6,23 @@ After=docker.service
 [Service]
 Environment=SVN_USER=svnuser
 Environment=VERSION=1.1
-CapabilityBoundingSet=CAP_NET_BIND_SERVICE CAP_NET_ADMIN CAP_SETUID CAP_SYS_RESOURCE
+CapabilityBoundingSet=CAP_NET_BIND_SERVICE CAP_NET_ADMIN CAP_SYS_RESOURCE CAP_DAC_OVERRIDE
 #-- prereq
-ExecStartPre=-/usr/bin/docker rm svnserve
 ExecStartPre=/usr/bin/mkdir -p /home/${SVN_USER}/logs /home/${SVN_USER}/repos /home/${SVN_USER}/.ssh
-ExecStartPre=/usr/bin/bash -c "echo 'ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQDZ6gFraNQ2lpaJ0NJTIxR4kdSJ6MkO6PjtWXIX9+Tvv9R44Md7EMeTrnwKXHuwhOcYiFyEfcFC6zd1zL0EllHZgTrDosEM9tkylqBlZtgndlT8y+gp2XmgG0siVHIyxyQyNR71F5xtqAFojgYhhs7aar50nZYPK0nPGS2Wum2GkW9I/35VdvLyiKhwwqhArnO/ghde+FSh/A3HKcADWZDDyAFUgKqDDARKFR81w67NqYEWJUK7ON1t6HgP1xzeevykVQvURkpcL7h9VpCqUB6v8lzgmmJneRYUVJnMvB17P1XHKjmnqvbSA/8exTH0iOWIs52QjR0yCydX0LnmTm/r samp@srvn.egaming.ro' >> /home/${SVN_USER}/.ssh/authorized_keys"
+#-- recreate the file
+ExecStartPre=/usr/bin/bash -c "echo 'ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQDZ6gFraNQ2lpaJ0NJTIxR4kdSJ6MkO6PjtWXIX9+Tvv9R44Md7EMeTrnwKXHuwhOcYiFyEfcFC6zd1zL0EllHZgTrDosEM9tkylqBlZtgndlT8y+gp2XmgG0siVHIyxyQyNR71F5xtqAFojgYhhs7aar50nZYPK0nPGS2Wum2GkW9I/35VdvLyiKhwwqhArnO/ghde+FSh/A3HKcADWZDDyAFUgKqDDARKFR81w67NqYEWJUK7ON1t6HgP1xzeevykVQvURkpcL7h9VpCqUB6v8lzgmmJneRYUVJnMvB17P1XHKjmnqvbSA/8exTH0iOWIs52QjR0yCydX0LnmTm/r samp@srvn.egaming.ro' >/home/${SVN_USER}/.ssh/authorized_keys"
 ExecStartPre=/usr/bin/bash -c "echo 'ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQDn0yvgQXKzVYauve+nOLAImeYJYBUWEqldz/h+8xH4lNEECu6oM4l55ZilS1WB4PQD6H8fTal/zW8MIaX71UwDEby2haqnfEZ2oC1AmBXvMH+n3TExjOXLVJ910msc5TxRqsfCiuV4lLPrFe7N1EF9EIS4uk42YduNHPysbFP7VVy7HmeUGHoeonpumRgfiXfsmRFDz7JVubMpXYeXmxM7u3V8Brc6VllXFiBIUqxy+PxVLrEImPua/bC1kLz6C7hyjH2SSNsilGatWONq/d0BpZF6cxjQP1tI4nRbs4YdWk3KhSz1gauzPKS60ZR4YldJmI7Gleb0d/Xxwv3M21Qx root@xantos-hdd' >> /home/${SVN_USER}/.ssh/authorized_keys"
 ExecStartPre=/usr/bin/bash -c "echo 'ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQDQR/UxNXnD6gSxhJwejZE0YjBYPHtSRQJp2fU0JjOSTHye6apdQme/XPGl8atAng6fyzlZcEaZFMDq7cNFZhrZzgCwtCaRRVdZh+wwJmTa0Qzi/sWK73+nGYnePfN1cFZdY9sLi9UnBgVmB5X5kgnCx4SIGZqUcze+fGW4LaGMVfcwZUo51TP8JfjRtfwAhXl2kIkTR1iY4pJ+ryTzdD5iLSwen5RbJbHsQ1GVpCp3nuUQn7z8Bsqt/BJClKM7HcOV1IbzPKIs49Z2ZP/+n03Km4VKaVkqPU8m29PBk8pYK6QP18SNTvgRFugqGSJqNDQt0H8FM1uGc8tqAuttlbxN xanto@fedora.test.lo' >> /home/${SVN_USER}/.ssh/authorized_keys"
-ExecStartPre=/usr/bin/chmod 600 /home/${SVN_USER}/.ssh/authorized_keys
-ExecStart=/usr/bin/docker run -p22:1022 --name svnserve -v /home/${SVN_USER}:/home/${SVN_USER} svn-ssh:${VERSION}
-ExecStartPost=/usr/bin/docker exec -d --privileged svnserve chown -R ${SVN_USER}:svnusers /home/${SVN_USER}
-ExecStartPost=/usr/bin/docker exec -d --privileged svnserve chmod +x /home/${SVN_USER} 
-ExecStop=/usr/bin/docker stop -t 2 svnserve
-ExecStopPost=-/usr/bin/docker rm svnserve
+ExecStartPre=-/usr/bin/docker rm $SVN_USER
+ExecStart=/usr/bin/docker run -p22:1022 --cgroup-parent=systemd --name $SVN_USER --rm -v /home/${SVN_USER}:/home/${SVN_USER} svn-ssh:${VERSION}
+ExecStartPost=/usr/bin/sleep 3
+ExecStartPost=/usr/bin/docker exec -d --privileged $SVN_USER /usr/bin/fixpriv
+ExecStop=/usr/bin/docker stop -t 2 $SVN_USER
+ExecStopPost=-/usr/bin/docker rm $SVN_USER
 
-Restart=always
+Type=simple
+Restart=on-failure
+RestartSec=5
 
 [Install]
 WantedBy=local.target
