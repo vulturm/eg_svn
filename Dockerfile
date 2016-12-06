@@ -12,6 +12,7 @@ ENV SVN_PORT=1022
 
 RUN apk update && \
     apk add subversion openssh openssl && \
+    apk add perl-net-smtp-ssl perl-authen-sasl && \
     rm /var/cache/apk/*
 
 RUN sed -i '/Subsystem/ s/^#*/#/; /UseDNS/ s/^#//' /etc/ssh/sshd_config && \
