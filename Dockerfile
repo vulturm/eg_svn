@@ -14,7 +14,7 @@ RUN apk update && \
     apk add subversion openssh openssl && \
     rm /var/cache/apk/*
 
-RUN sed -i '/Subsystem/ s/^#*/#/' /etc/ssh/sshd_config && \
+RUN sed -i '/Subsystem/ s/^#*/#/; /UseDNS/ s/^#//' /etc/ssh/sshd_config && \
   ssh-keygen -b 4096 -f /etc/ssh/ssh_host_rsa_key -t rsa -N "" ; \
   ssh-keygen -b 1024 -f /etc/ssh/ssh_host_dsa_key -t dsa -N "" ; \
   ssh-keygen -b 521 -f /etc/ssh/ssh_host_ecdsa_key -t ecdsa -N "" ; \
